@@ -13,19 +13,45 @@ const youtube = google.youtube({
 });
 
 app.get("/api/:vidID", async (req, res) => {
-    const id = req.params.vidID;
-
-    const videoParams = {
-        part: "snippet,contentDetails",
-        id: id,
-    };
+    const videoID = req.params.vidID;
 
     try {
-        // Call the videos.list API endpoint with the specified parameters
-        const response = await youtube.videos.list(videoParams);
+        const videoInfoParams = {
+            part: "snippet,contentDetails",
+            id: videoID,
+        };
 
-        // send response data to client with status code
-        res.status(200).send(response.data);
+        const videoInfoResponse = await youtube.videos.list(videoInfoParams);
+        const videoInfo = videoInfoResponse.data.items[0];
+        // Get the captions track ID (if available)
+        const captionsFound = videoInfo?.contentDetails?.caption;
+        // Get the captions track ID (if available)
+        const captionTrackID = videoInfo?.contentDetails?.caption?.itemId;
+
+        if (captionTrackID) {
+            const captionsParams = {
+                part: "id,snippet",
+                videoId: videoID,
+                captionId: captionTrackID,
+            };
+
+            const captionsResponse = await youtube.captions.list(
+                captionsParams
+            );
+            const captionData = captionsResponse.data.items[0].snippet;
+
+            // Send response data to client with status code and captions
+            res.status(200).json({
+                videoInfo,
+                captionData,
+            });
+        } else {
+            // No captions available
+            res.status(200).json({
+                videoInfo,
+                message: "Captions not available for this video",
+            });
+        }
     } catch (error) {
         // send error message to client with status code
         res.status(500).send(error.message);
