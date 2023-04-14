@@ -9,22 +9,20 @@ dotenv.config();
 const app = express();
 
 app.get("/api/:vidID", async (req, res) => {
-    try {
-        const videoId = req.params.vidID;
-        const videoInfo = await getVideoInfo(videoId);
-        const videoLength = getVideoLength(videoInfo);
-        const transcript = await getVideoTranscript(videoId);
+    const videoId = req.params.vidID;
 
-        const response = {
-            title: videoInfo.title,
-            description: videoInfo.description,
-            transcript: transcript,
-        };
-
-        res.status(200).json(response);
-    } catch (error) {
-        res.status(500).send(error.message);
+    const videoInfo = await getVideoInfo(videoId);
+    if (videoInfo.error) {
+        return res.status(404).send(videoInfo);
     }
+
+    const transcript = await getVideoTranscript(videoId);
+    if (transcript.error) {
+        return res.status(404).send(transcript);
+    }
+
+    const data = { videoInfo, transcript };
+    res.send(data);
 });
 
 app.listen(3000, () => {

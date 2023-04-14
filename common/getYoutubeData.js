@@ -40,9 +40,9 @@ export async function getVideoInfo(videoId) {
 }
 
 /*
- *   Get the captions track ID (if available)
+ *   This function gets the length of a video in
  *   @param {Object} videoInfo - The video info object
- *   @returns {String} - The captions track ID
+ *  @returns {Number} - The video length in seconds
  */
 export function getVideoLength(videoInfo) {
     const duration = videoInfo.contentDetails.duration;
