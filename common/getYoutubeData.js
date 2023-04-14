@@ -1,19 +1,12 @@
 import { google } from "googleapis";
-import * as dotenv from "dotenv";
-
-dotenv.config();
-
-const youtube = google.youtube({
-    version: "v3",
-    auth: process.env.YOUTUBE_API_KEY,
-});
 
 /**
  * This function retrieves information about a YouTube video
  * @param {string} videoId - The ID of the YouTube video
+ * @param {Object} youtube - The YouTube API object
  * @returns {Object} - An object containing information about the video
  */
-export async function getVideoInfo(videoId) {
+export async function getVideoInfo(videoId, youtube) {
     const videoParams = {
         part: "snippet,contentDetails",
         id: videoId,
