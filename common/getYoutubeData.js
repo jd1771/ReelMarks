@@ -6,12 +6,20 @@ import { google } from "googleapis";
  * @param {Object} youtube - The YouTube API object
  * @returns {Object} - An object containing information about the video
  */
-export async function getVideoInfo(videoId, youtube) {
+export async function getVideoInfo(videoId, API_KEY) {
+    // Create a new YouTube object
+    const youtube = google.youtube({
+        version: "v3",
+        auth: API_KEY,
+    });
+
+    // Create the parameters for the YouTube API call
     const videoParams = {
         part: "snippet,contentDetails",
         id: videoId,
     };
 
+    // Make the API call
     try {
         const videoResponse = await youtube.videos.list(videoParams);
 
