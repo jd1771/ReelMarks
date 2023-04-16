@@ -22,7 +22,7 @@ app.get("/api/:vidID", async (req, res) => {
         return res.status(404).send(videoInfo);
     }
 
-    const cleanedTranscript = cleanTranscript(transcriptResponse);
+    const cleanedTranscript = cleanTranscript(transcriptResponse, 50);
 
     const data = {
         title: videoInfo.title,
