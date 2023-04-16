@@ -2,6 +2,7 @@ import express from "express";
 import * as dotenv from "dotenv";
 import { getVideoInfo, getVideoLength } from "./common/getYoutubeData.js";
 import { getYoutubeTranscript } from "./common/getYoutubeTranscript.js";
+import { cleanTranscript } from "./common/cleanTranscript.js";
 
 dotenv.config();
 
@@ -21,15 +22,15 @@ app.get("/api/:vidID", async (req, res) => {
         return res.status(404).send(videoInfo);
     }
 
-    const transcript = transcriptResponse.map((item) => item.text).join(" ");
+    const cleanedTranscript = cleanTranscript(transcriptResponse);
 
     const data = {
         title: videoInfo.title,
-        description: videoInfo.description,
         duration: videoInfo.duration,
-        transcript,
+        transcript: cleanedTranscript,
     };
-    res.send(data);
+
+    res.send(cleanedTranscript);
 });
 
 app.listen(3000, () => {
