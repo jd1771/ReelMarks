@@ -29,33 +29,39 @@ app.get("/api/:vidID", async (req, res) => {
         return res.status(404).send(videoInfo);
     }
 
-    const prompt =
-        "Subdivide following transcription data into a maximum of 3 sections in the format (0:00 - description). For each section give the timestamp and a short 1-2 sentence description of what happens in that section.";
+    const prompt = `Summarize this section from the video '${videoInfo.title}'. The summary should be no more than 30 words`;
     const cleanedTranscript = cleanTranscript(transcriptResponse, 100);
     const timestamps = [];
     // For each batch make a call to the OpenAI API to generate the timestamps
     for (let i = 0; i < 1; i++) {
+        // Get the batch of transcript items
         const batch = cleanedTranscript[i];
-        console.log(prompt + JSON.stringify(batch));
-        //const response = await openai.createCompletion({
-        //    model: "text-davinci-003",
-        //    prompt: prompt + JSON.stringify(batch),
-        //    temperature: 0.2,
-        //    max_tokens: 2000,
-        //
-        //    //n: 1,
-        //    stream: false,
-        //});
-        ////console.log(prompt + JSON.stringify(batch));
-        //const timestampsBatch = response.data.choices[0].text;
-        //timestamps.push(timestampsBatch);
-        // timestamps.push(timestampsBatch);
-        // timestampsBatch.forEach((timestamp, index) => {
-        //     timestamps.push({
-        //         text: batch[index].text,
-        //         time: timestamp,
-        //     });
-        // });
+
+        // Send the batch to the OpenAI API and retrieve the summarized text
+        const response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: prompt + JSON.stringify(batch),
+            temperature: 0.2,
+            max_tokens: 2000,
+            stream: false,
+        });
+        //console.log(prompt + JSON.stringify(batch));
+        let timestampText = response.data.choices[0].text;
+
+        // Remove any new lines from the text
+        timestampText = timestampText.replace(/(\r\n|\n|\r)/gm, "");
+
+        // Get the time from the first item in the batch and convert it to minutes
+        const time = batch[0]["time"];
+
+        // Get the time/text object
+        const timeText = {
+            time: time,
+            text: timestampText,
+        };
+
+        // Add the time/text object to the timestamps array
+        timestamps.push(timeText);
     }
 
     const data = {
