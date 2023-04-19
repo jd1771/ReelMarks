@@ -2,7 +2,7 @@ import express from "express";
 import * as dotenv from "dotenv";
 import { getVideoInfo, getVideoLength } from "./common/getYoutubeData.js";
 import { getYoutubeTranscript } from "./common/getYoutubeTranscript.js";
-import { cleanTranscript } from "./common/cleanTranscript.js";
+import { createBatches } from "./common/createBatches.js";
 import { Configuration, OpenAIApi } from "openai";
 
 dotenv.config();
@@ -29,13 +29,19 @@ app.get("/api/:vidID", async (req, res) => {
         return res.status(404).send(videoInfo);
     }
 
-    const prompt = `Summarize this section from the video '${videoInfo.title}'. The summary should be no more than 30 words`;
-    const cleanedTranscript = cleanTranscript(transcriptResponse, 100);
+    const prompt = `Summarize this section from the video '${videoInfo.title}'. The summary should be no more than 30 words. Don't include spoilers to the video content`;
+    const cleanedTranscript = transcriptResponse.map((t) => ({
+        time: t.offset / 1000,
+        text: t.text.replace(/[\r\n]/g, " ").replace(/[^a-zA-Z0-9 ]/g, ""),
+    }));
+
+    const batches = createBatches(cleanedTranscript);
     const timestamps = [];
+
     // For each batch make a call to the OpenAI API to generate the timestamps
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < batches.length; i++) {
         // Get the batch of transcript items
-        const batch = cleanedTranscript[i];
+        const batch = batches[i];
 
         // Send the batch to the OpenAI API and retrieve the summarized text
         const response = await openai.createCompletion({
