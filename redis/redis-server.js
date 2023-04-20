@@ -4,6 +4,9 @@ import redis from "redis";
 import { promisify } from "util";
 import * as dotenv from "dotenv";
 
+// Load in the environment variables
+dotenv.config({ path: "../.env" });
+
 // Create a Redis client
 const client = redis.createClient();
 
@@ -58,7 +61,7 @@ app.get("/transcript/:videoId", (req, res) => {
 });
 
 // Start the server
-const port = process.env.PORT || 3000;
+const port = process.env.REDIS_SERVER_PORT || 3001;
 app.listen(port, () => {
     console.log(`Server started on port ${port}`);
 });
