@@ -35,15 +35,15 @@ app.get("/api/:vidID", async (req, res) => {
     const videoId = req.params.vidID;
 
     // Check if the videoID exists in Redis
-    //try {
-    //    const result = await redisClient.get(videoId);
-    //    if (result) {
-    //        console.log("Retrieved from Redis");
-    //        return res.send(JSON.parse(result));
-    //    }
-    //} catch (error) {
-    //    return res.send("Error retrieving video");
-    //}
+    try {
+        const result = await redisClient.get(videoId);
+        if (result) {
+            console.log("Retrieved from Redis");
+            return res.send(JSON.parse(result));
+        }
+    } catch (error) {
+        return res.send("Error retrieving video");
+    }
 
     const videoInfo = await getVideoInfo(videoId, process.env.YOUTUBE_API_KEY);
     if (videoInfo.error) {
@@ -71,15 +71,12 @@ app.get("/api/:vidID", async (req, res) => {
         const batch = batches[i];
         console.log("starting batch " + i + " of " + batches.length + "");
 
-        // print the size of the batch in bytes
-        //console.log(Buffer.byteLength(JSON.stringify(batch)));
-
         // Send the batch to the OpenAI API and retrieve the summarized text
         const response = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt + JSON.stringify(batch),
             temperature: 0.2,
-            max_tokens: 2000,
+            max_tokens: 150,
             stream: false,
         });
 
@@ -99,11 +96,10 @@ app.get("/api/:vidID", async (req, res) => {
 
         // Add the time/text object to the timestamps array
         timestamps.push(timeText);
-
-        console.log("completed batch " + i);
     }
 
     // Create data object
+
     const data = {
         title: videoInfo.title,
         duration: videoInfo.duration,
