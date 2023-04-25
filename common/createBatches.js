@@ -4,7 +4,7 @@
  * @returns {Array} An array of transcript batches, with each batch containing roughly the same number of transcript objects. If the size of each batch exceeds 3000 bytes, the maximum size of each batch will be 3000 bytes.
  */
 export function createBatches(transcript, MAX_BATCHES = 6) {
-    const NUM_TOKENS_ALLOWED = 3500;
+    const NUM_TOKENS_ALLOWED = 3200;
     const CHARACTERS_PER_TOKEN = 4;
     const transcriptBytes = transcript.reduce((acc, curr) => {
         const currBytes = new TextEncoder().encode(JSON.stringify(curr)).length;
@@ -18,10 +18,6 @@ export function createBatches(transcript, MAX_BATCHES = 6) {
         bytesPerBatch,
         NUM_TOKENS_ALLOWED * CHARACTERS_PER_TOKEN
     );
-
-    //console.log("total bytes", transcriptBytes);
-    //console.log("bytes per batch", bytesPerBatch);
-    //console.log("max bytes per batch", maxBytesPerBatch);
 
     // Split the data such that each batch is a maximum size of maxBytesPerBatch
     const transcriptChunks = [];
