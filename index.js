@@ -3,18 +3,12 @@ import * as dotenv from "dotenv";
 import { getVideoInfo, getVideoLength } from "./common/getYoutubeData.js";
 import { getYoutubeTranscript } from "./common/getYoutubeTranscript.js";
 import { createBatches } from "./common/createBatches.js";
-import { Configuration, OpenAIApi } from "openai";
+import { getTimestamps } from "./common/getTimestamps.js";
 import redis from "redis";
 
 dotenv.config();
 
 const app = express();
-
-const openAIConfiguration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
-const openai = new OpenAIApi(openAIConfiguration);
 
 const redisClient = redis.createClient({
     host: "localhost",
@@ -63,40 +57,11 @@ app.get("/api/:vidID", async (req, res) => {
     }));
 
     const batches = createBatches(cleanedTranscript);
-    const timestamps = [];
-
-    // For each batch make a call to the OpenAI API to generate the timestamps
-    for (let i = 0; i < batches.length; i++) {
-        // Get the batch of transcript items
-        const batch = batches[i];
-        console.log("starting batch " + i + " of " + batches.length + "");
-
-        // Send the batch to the OpenAI API and retrieve the summarized text
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: prompt + JSON.stringify(batch),
-            temperature: 0.2,
-            max_tokens: 150,
-            stream: false,
-        });
-
-        let timestampText = response.data.choices[0].text;
-
-        // Remove any new lines from the text
-        timestampText = timestampText.replace(/(\r\n|\n|\r)/gm, "");
-
-        // Get the time from the first item in the batch and convert it to minutes
-        const time = batch[0]["time"];
-
-        // Get the time/text object
-        const timeText = {
-            time: time,
-            text: timestampText,
-        };
-
-        // Add the time/text object to the timestamps array
-        timestamps.push(timeText);
-    }
+    const timestamps = await getTimestamps(
+        batches,
+        prompt,
+        process.env.OPENAI_API_KEY
+    );
 
     // Create data object
 
