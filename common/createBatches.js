@@ -22,19 +22,23 @@ export function createBatches(transcript, MAX_BATCHES = 6) {
     // Split the data such that each batch is a maximum size of maxBytesPerBatch
     const transcriptChunks = [];
     let currBytes = 0;
-    let currChunks = [];
-    for (let i = 0; i < transcript.length; i++) {
+    let currChunks = {
+        time: 0,
+        text: transcript[0].text,
+    };
+    for (let i = 1; i < transcript.length; i++) {
         const currChunk = transcript[i];
-        const currChunkBytes = new TextEncoder().encode(
-            JSON.stringify(currChunk)
-        ).length;
+        const currChunkBytes = new TextEncoder().encode(currChunk.text).length;
 
         if (currBytes + currChunkBytes > maxBytesPerBatch) {
             transcriptChunks.push(currChunks);
             currBytes = currChunkBytes;
-            currChunks = [currChunk];
+            currChunks = {
+                time: currChunk.time,
+                text: currChunk.text,
+            };
         } else {
-            currChunks.push(currChunk);
+            currChunks.text += " " + currChunk.text;
             currBytes += currChunkBytes;
         }
 
