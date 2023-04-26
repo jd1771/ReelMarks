@@ -50,7 +50,7 @@ app.get("/api/:vidID", async (req, res) => {
         return res.status(404).send(videoInfo);
     }
 
-    const prompt = `Summarize this section from the video '${videoInfo.title}'. The summary should be no more than 30 words. Don't include spoilers to the video content`;
+    const prompt = `Summarize the following section from the video '${videoInfo.title}'. The summary should be a maximum of 20 words. Don't include spoilers for the video content. Summarize: `;
     const cleanedTranscript = transcriptResponse.map((t) => ({
         time: t.offset / 1000,
         text: t.text.replace(/[\r\n]/g, " ").replace(/[^a-zA-Z0-9 ]/g, ""),

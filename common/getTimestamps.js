@@ -13,11 +13,12 @@ export async function getTimestamps(batches, prompt, API_KEY) {
     for (let i = 0; i < batches.length; i++) {
         // Get the batch of transcript items
         const batch = batches[i];
+        const fullPrompt = prompt + "'" + batch.text + "'";
 
         // Send the batch to the OpenAI API and retrieve the summarized text
         const response = await openai.createCompletion({
             model: "text-davinci-003",
-            prompt: prompt + batch.text,
+            prompt: fullPrompt,
             temperature: 0.2,
             max_tokens: 150,
             stream: false,
@@ -29,7 +30,7 @@ export async function getTimestamps(batches, prompt, API_KEY) {
         timestampText = timestampText.replace(/(\r\n|\n|\r)/gm, "");
 
         // Get the time from the batch
-        const time = batch;
+        const time = batch.time;
 
         // Get the time/text object
         const timeText = {
