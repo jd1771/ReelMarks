@@ -7,7 +7,7 @@ export function createBatches(transcript, MAX_BATCHES = 6) {
     const NUM_TOKENS_ALLOWED = 3200;
     const CHARACTERS_PER_TOKEN = 4;
     const transcriptBytes = transcript.reduce((acc, curr) => {
-        const currBytes = new TextEncoder().encode(JSON.stringify(curr)).length;
+        const currBytes = new TextEncoder().encode(curr.text).length;
         return acc + currBytes;
     }, 0);
 
@@ -21,7 +21,7 @@ export function createBatches(transcript, MAX_BATCHES = 6) {
 
     // Split the data such that each batch is a maximum size of maxBytesPerBatch
     const transcriptChunks = [];
-    let currBytes = 0;
+    let currBytes = new TextEncoder().encode(transcript[0].text).length;
     let currChunks = {
         time: 0,
         text: transcript[0].text,
@@ -42,8 +42,16 @@ export function createBatches(transcript, MAX_BATCHES = 6) {
             currBytes += currChunkBytes;
         }
 
+        // Handle the last chunk
         if (i === transcript.length - 1) {
-            transcriptChunks.push(currChunks);
+            // If the last chunk is less than 350 bytes, add it to the previous chunk
+            if (currChunkBytes < 350) {
+                transcriptChunks[transcriptChunks.length - 1].text +=
+                    " " + currChunk.text;
+                // Otherwise, add it as a new chunk
+            } else {
+                transcriptChunks.push(currChunks);
+            }
         }
     }
 
