@@ -1,5 +1,12 @@
 import { Configuration, OpenAIApi } from "openai";
 
+/**
+ * Get's the transcript data for each batch that was created.
+ * @param {Array} batches - An array of transcript batches, with each batch containing roughly the same number of transcript objects. If the size of each batch exceeds 3000 bytes, the maximum size of each batch will be 3000 bytes.
+ * @param {string} prompt - The prompt to use for the OpenAI API.
+ * @param {string} API_KEY - The API key to use for the OpenAI API.
+ * @returns {Array} An array of time/text objects, with each object containing a "time" and "text" property.
+ */
 export async function getTimestamps(batches, prompt, API_KEY) {
     const openAIConfiguration = new Configuration({
         apiKey: API_KEY,
@@ -30,11 +37,20 @@ export async function getTimestamps(batches, prompt, API_KEY) {
         timestampText = timestampText.replace(/(\r\n|\n|\r)/gm, "");
 
         // Get the time from the batch
-        const time = batch.time;
+        let time = batch.time;
+
+        // Convert the time to a youtube timestamp string
+        const hours = Math.floor(time / 3600);
+        const minutes = Math.floor((time - hours * 3600) / 60);
+        const seconds = Math.floor(time - hours * 3600 - minutes * 60);
+
+        const timeString = `${hours}:${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
         // Get the time/text object
         const timeText = {
-            time: time,
+            time: timeString,
             text: timestampText,
         };
 
