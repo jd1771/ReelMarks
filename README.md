@@ -22,7 +22,10 @@ To run the application locally, you will need to have Docker and Docker Compose 
 
 1. Clone the repository.
 2. Create a `.env` file in the root of the project and add the required environment variables.
-3. The application should now be running at `http://localhost:3000`.
+3. Build the Docker image using `docker-compose build`.
+4. Start the Docker container using `docker-compose up`.
+5. The application should now be running at `http://localhost:3000`.
+6. To stop the Docker container, run `docker-compose down`.
 
 ## Technologies Used
 
