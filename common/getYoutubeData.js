@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import moment from "moment";
 
 /**
  * This function retrieves information about a YouTube video
@@ -41,13 +42,14 @@ export async function getVideoInfo(videoId, API_KEY) {
 }
 
 /*
- *   This function gets the length of a video in
+ *   This function gets the length of the video
  *   @param {Object} videoInfo - The video info object
  *  @returns {Number} - The video length in seconds
  */
 export function getVideoLength(videoInfo) {
-    const duration = videoInfo.contentDetails.duration;
-    const videoLength = moment.duration(duration).asSeconds();
+    console.log(videoInfo);
+    const durationEncoded = videoInfo.duration;
+    const videoLength = moment.duration(durationEncoded).asSeconds();
 
     return videoLength;
 }

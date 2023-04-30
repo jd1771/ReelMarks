@@ -11,9 +11,11 @@ dotenv.config();
 const app = express();
 
 const redisClient = redis.createClient({
-    url: "redis://redis:6379",
+    host: "localhost",
+    port: 6379,
 });
 
+// Connect to Redis
 (async () => {
     try {
         await redisClient.connect();
@@ -35,7 +37,7 @@ app.get("/api/:vidID", async (req, res) => {
             return res.send(JSON.parse(result));
         }
     } catch (error) {
-        return res.send("Error retrieving video");
+        return res.status(400).send("Error retrieving video");
     }
 
     const videoInfo = await getVideoInfo(videoId, process.env.YOUTUBE_API_KEY);
@@ -43,10 +45,19 @@ app.get("/api/:vidID", async (req, res) => {
         return res.status(404).send(videoInfo);
     }
 
+    const lengthInSeconds = getVideoLength(videoInfo);
+
+    // Bail if the video length is longer than 3 hours
+    if (lengthInSeconds > 10800) {
+        return res
+            .status(400)
+            .send({ error: "Video exceeds max duration of 3 hours" });
+    }
+
     const transcriptResponse = await getYoutubeTranscript(videoId);
 
-    if (videoInfo.error) {
-        return res.status(404).send(videoInfo);
+    if (transcriptResponse.error) {
+        return res.status(404).send(transcriptResponse);
     }
 
     const prompt = `Summarize the following section from the video '${videoInfo.title}'. The summary should be a maximum of 20 words. Don't include spoilers for the video content. Summarize: `;
@@ -63,18 +74,16 @@ app.get("/api/:vidID", async (req, res) => {
     );
 
     // Create data object
-
     const data = {
         title: videoInfo.title,
-        duration: videoInfo.duration,
-        transcript: cleanedTranscript,
+        duration: lengthInSeconds,
         timestamps: timestamps,
     };
 
     // Save the transcription in Redis
-    await redisClient.set(videoId, JSON.stringify(timestamps));
+    await redisClient.set(videoId, JSON.stringify(data));
 
-    res.send(data.timestamps);
+    res.send(data);
 });
 
 app.listen(3000, () => {
