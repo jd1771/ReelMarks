@@ -1,4 +1,4 @@
-import { Configuration, OpenAIApi } from "openai";
+const { Configuration, OpenAIApi } = require("openai");
 
 /**
  * Get's the transcript data for each batch that was created.
@@ -7,7 +7,7 @@ import { Configuration, OpenAIApi } from "openai";
  * @param {string} API_KEY - The API key to use for the OpenAI API.
  * @returns {Array} An array of time/text objects, with each object containing a "time" and "text" property.
  */
-export async function getTimestamps(batches, prompt, API_KEY) {
+async function getTimestamps(batches, prompt, API_KEY) {
     const openAIConfiguration = new Configuration({
         apiKey: API_KEY,
     });
@@ -60,3 +60,8 @@ export async function getTimestamps(batches, prompt, API_KEY) {
 
     return timestamps;
 }
+
+// Export the function
+module.exports = {
+    getTimestamps,
+};

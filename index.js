@@ -1,10 +1,10 @@
-import express from "express";
-import * as dotenv from "dotenv";
-import { getVideoInfo, getVideoLength } from "./common/getYoutubeData.js";
-import { getYoutubeTranscript } from "./common/getYoutubeTranscript.js";
-import { createBatches } from "./common/createBatches.js";
-import { getTimestamps } from "./common/getTimestamps.js";
-import redis from "redis";
+const express = require("express");
+const dotenv = require("dotenv");
+const { getVideoInfo, getVideoLength } = require("./common/getYoutubeData.js");
+const { getYoutubeTranscript } = require("./common/getYoutubeTranscript.js");
+const { createBatches } = require("./common/createBatches.js");
+const { getTimestamps } = require("./common/getTimestamps.js");
+const redis = require("redis");
 
 dotenv.config();
 

@@ -1,5 +1,5 @@
-import { google } from "googleapis";
-import moment from "moment";
+const { google } = require("googleapis");
+const moment = require("moment");
 
 /**
  * This function retrieves information about a YouTube video
@@ -7,7 +7,7 @@ import moment from "moment";
  * @param {Object} youtube - The YouTube API object
  * @returns {Object} - An object containing information about the video
  */
-export async function getVideoInfo(videoId, API_KEY) {
+async function getVideoInfo(videoId, API_KEY) {
     // Create a new YouTube object
     const youtube = google.youtube({
         version: "v3",
@@ -46,10 +46,15 @@ export async function getVideoInfo(videoId, API_KEY) {
  *   @param {Object} videoInfo - The video info object
  *  @returns {Number} - The video length in seconds
  */
-export function getVideoLength(videoInfo) {
+function getVideoLength(videoInfo) {
     console.log(videoInfo);
     const durationEncoded = videoInfo.duration;
     const videoLength = moment.duration(durationEncoded).asSeconds();
 
     return videoLength;
 }
+
+module.exports = {
+    getVideoInfo,
+    getVideoLength,
+};

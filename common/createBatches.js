@@ -3,7 +3,7 @@
  * @param {Array} transcript - An array of objects representing the transcript data, with each object containing a "time" and "text" property.
  * @returns {Array} An array of transcript batches, with each batch containing roughly the same number of transcript objects. If the size of each batch exceeds 3000 bytes, the maximum size of each batch will be 3000 bytes.
  */
-export function createBatches(transcript, MAX_BATCHES = 6) {
+function createBatches(transcript, MAX_BATCHES = 6) {
     const NUM_TOKENS_ALLOWED = 3200;
     const CHARACTERS_PER_TOKEN = 4;
     const transcriptBytes = transcript.reduce((acc, curr) => {
@@ -57,3 +57,7 @@ export function createBatches(transcript, MAX_BATCHES = 6) {
 
     return transcriptChunks;
 }
+
+module.exports = {
+    createBatches,
+};
