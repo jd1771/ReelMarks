@@ -1,11 +1,8 @@
-const express = require("express");
 const { getVideoInfo, getVideoLength } = require("./common/getYoutubeData.js");
 const { getYoutubeTranscript } = require("./common/getYoutubeTranscript.js");
 const { createBatches } = require("./common/createBatches.js");
 const { getTimestamps } = require("./common/getTimestamps.js");
 const redis = require("redis");
-
-const app = express();
 
 const redisClient = redis.createClient({
     host: "localhost",
@@ -23,8 +20,8 @@ const redisClient = redis.createClient({
     }
 })();
 
-app.get("/api/:vidID", async (req, res) => {
-    const videoId = req.params.vidID;
+exports.handler = async function (event, context) {
+    const videoId = event.queryStringParameters.vidID;
 
     // Check if the videoID exists in Redis
     try {
@@ -77,8 +74,4 @@ app.get("/api/:vidID", async (req, res) => {
     await redisClient.set(videoId, JSON.stringify(data));
 
     res.send(data);
-});
-
-app.listen(3000, () => {
-    console.debug("App listening on :3000");
-});
+};
