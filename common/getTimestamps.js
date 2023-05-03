@@ -4,12 +4,12 @@ const { Configuration, OpenAIApi } = require("openai");
  * Get's the transcript data for each batch that was created.
  * @param {Array} batches - An array of transcript batches, with each batch containing roughly the same number of transcript objects. If the size of each batch exceeds 3000 bytes, the maximum size of each batch will be 3000 bytes.
  * @param {string} prompt - The prompt to use for the OpenAI API.
- * @param {string} API_KEY - The API key to use for the OpenAI API.
+ * @param {string} OPENAI_API_KEY - The API key to use for the OpenAI API.
  * @returns {Array} An array of time/text objects, with each object containing a "time" and "text" property.
  */
-async function getTimestamps(batches, prompt, API_KEY) {
+async function getTimestamps(batches, prompt) {
     const openAIConfiguration = new Configuration({
-        apiKey: API_KEY,
+        apiKey: OPENAI_API_KEY,
     });
 
     const openai = new OpenAIApi(openAIConfiguration);

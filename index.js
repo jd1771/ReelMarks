@@ -1,12 +1,9 @@
 const express = require("express");
-const dotenv = require("dotenv");
 const { getVideoInfo, getVideoLength } = require("./common/getYoutubeData.js");
 const { getYoutubeTranscript } = require("./common/getYoutubeTranscript.js");
 const { createBatches } = require("./common/createBatches.js");
 const { getTimestamps } = require("./common/getTimestamps.js");
 const redis = require("redis");
-
-dotenv.config();
 
 const app = express();
 
@@ -40,7 +37,7 @@ app.get("/api/:vidID", async (req, res) => {
         return res.status(400).send("Error retrieving video");
     }
 
-    const videoInfo = await getVideoInfo(videoId, process.env.YOUTUBE_API_KEY);
+    const videoInfo = await getVideoInfo(videoId);
     if (videoInfo.error) {
         return res.status(404).send(videoInfo);
     }
@@ -67,11 +64,7 @@ app.get("/api/:vidID", async (req, res) => {
     }));
 
     const batches = createBatches(cleanedTranscript);
-    const timestamps = await getTimestamps(
-        batches,
-        prompt,
-        process.env.OPENAI_API_KEY
-    );
+    const timestamps = await getTimestamps(batches, prompt);
 
     // Create data object
     const data = {
