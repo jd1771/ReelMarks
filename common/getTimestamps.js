@@ -9,7 +9,7 @@ const { Configuration, OpenAIApi } = require("openai");
  */
 async function getTimestamps(batches, prompt) {
     const openAIConfiguration = new Configuration({
-        apiKey: OPENAI_API_KEY,
+        apiKey: process.env.OPENAI_API_KEY,
     });
 
     const openai = new OpenAIApi(openAIConfiguration);

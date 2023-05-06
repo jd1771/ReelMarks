@@ -11,7 +11,7 @@ async function getVideoInfo(videoId) {
     // Create a new YouTube object
     const youtube = google.youtube({
         version: "v3",
-        auth: YOUTUBE_API_KEY,
+        auth: process.env.YOUTUBE_API_KEY,
     });
 
     // Create the parameters for the YouTube API call
