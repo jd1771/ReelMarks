@@ -12,7 +12,7 @@ The following environment variables are required:
 
 -   `REDIS_SERVER_PORT`: The port on which Redis server is running.
 -   `REDIS_URL`: The URL of the Redis server.
--   `REDIS_EXPIRATION_TIME`: The expiration time for the Redis cache (in seconds). A value of 0 disables caching.
+-   `REDIS_EXPIRATION_TIME`: The expiration time for the Redis cache (in seconds). A value of `0` means that the cached value will never expire.
 -   `YOUTUBE_API_KEY`: The API key for the YouTube API.
 -   `OPENAI_API_KEY`: The API key for the OpenAI GPT-3 API.
 
