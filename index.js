@@ -11,8 +11,7 @@ dotenv.config();
 const app = express();
 
 const redisClient = redis.createClient({
-    host: "localhost",
-    port: 6379,
+    url: "redis://redis:6379",
 });
 
 // Connect to Redis
