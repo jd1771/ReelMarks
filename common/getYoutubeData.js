@@ -47,7 +47,6 @@ export async function getVideoInfo(videoId, API_KEY) {
  *  @returns {Number} - The video length in seconds
  */
 export function getVideoLength(videoInfo) {
-    console.log(videoInfo);
     const durationEncoded = videoInfo.duration;
     const videoLength = moment.duration(durationEncoded).asSeconds();
 
