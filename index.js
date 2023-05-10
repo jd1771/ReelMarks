@@ -6,6 +6,22 @@ import { createBatches } from "./common/createBatches.js";
 import { getTimestamps } from "./common/getTimestamps.js";
 import redis from "redis";
 
+/**
+ * Connects to a Redis client.
+ * @param {Object} redisClient - The Redis client to connect to.
+ * @returns {Promise<void>} - A Promise that resolves when the client is connected successfully.
+ * @throws {Error} - If there was an error connecting to the Redis client.
+ */
+async function connectToRedis(redisClient) {
+    try {
+        await redisClient.connect();
+        console.log("Connected to Redis");
+    } catch (error) {
+        console.error("Failed to connect to Redis:", error);
+        process.exit(1);
+    }
+}
+
 dotenv.config();
 
 const app = express();
@@ -14,16 +30,8 @@ const redisClient = redis.createClient({
     url: "redis://redis:6379",
 });
 
-// Connect to Redis
-(async () => {
-    try {
-        await redisClient.connect();
-        console.log("Redis client connected");
-    } catch (error) {
-        console.error("Failed to connect to Redis:", error);
-        process.exit(1);
-    }
-})();
+// Call the function to connect to Redis
+await connectToRedis(redisClient);
 
 app.get("/api/:vidID", async (req, res) => {
     const videoId = req.params.vidID;
