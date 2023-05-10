@@ -7,11 +7,11 @@ import moment from "moment";
  * @param {Object} youtube - The YouTube API object
  * @returns {Object} - An object containing information about the video
  */
-export async function getVideoInfo(videoId, API_KEY) {
+export async function getVideoInfo(videoId) {
     // Create a new YouTube object
     const youtube = google.youtube({
         version: "v3",
-        auth: API_KEY,
+        auth: process.env.YOUTUBE_API_KEY,
     });
 
     // Create the parameters for the YouTube API call

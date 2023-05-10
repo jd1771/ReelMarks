@@ -6,6 +6,12 @@ import { createBatches } from "./common/createBatches.js";
 import { getTimestamps } from "./common/getTimestamps.js";
 import redis from "redis";
 
+// The URL for the Redis client
+const REDIS_URL = "redis://redis:6379";
+
+// The expiration time for the Redis key in seconds (-1 = never expires)
+const REDIS_EXPIRATION_TIME = -1; // 0 seconds
+
 /**
  * Connects to a Redis client.
  * @param {Object} redisClient - The Redis client to connect to.
@@ -27,7 +33,7 @@ dotenv.config();
 const app = express();
 
 const redisClient = redis.createClient({
-    url: "redis://redis:6379",
+    url: REDIS_URL,
 });
 
 // Call the function to connect to Redis
@@ -44,10 +50,10 @@ app.get("/api/:vidID", async (req, res) => {
             return res.send(JSON.parse(result));
         }
     } catch (error) {
-        return res.status(400).send("Error retrieving video");
+        console.log("Error retrieving video from redis");
     }
 
-    const videoInfo = await getVideoInfo(videoId, process.env.YOUTUBE_API_KEY);
+    const videoInfo = await getVideoInfo(videoId);
     if (videoInfo.error) {
         return res.status(404).send(videoInfo);
     }
@@ -74,11 +80,7 @@ app.get("/api/:vidID", async (req, res) => {
     }));
 
     const batches = createBatches(cleanedTranscript);
-    const timestamps = await getTimestamps(
-        batches,
-        prompt,
-        process.env.OPENAI_API_KEY
-    );
+    const timestamps = await getTimestamps(batches, prompt);
 
     // Create data object
     const data = {
@@ -88,7 +90,12 @@ app.get("/api/:vidID", async (req, res) => {
     };
 
     // Save the transcription in Redis
-    await redisClient.set(videoId, JSON.stringify(data));
+    await redisClient.set(
+        videoId,
+        JSON.stringify(data),
+        "EX",
+        REDIS_EXPIRATION_TIME
+    );
 
     res.send(data);
 });

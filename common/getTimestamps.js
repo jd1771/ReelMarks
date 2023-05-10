@@ -7,9 +7,9 @@ import { Configuration, OpenAIApi } from "openai";
  * @param {string} API_KEY - The API key to use for the OpenAI API.
  * @returns {Array} An array of time/text objects, with each object containing a "time" and "text" property.
  */
-export async function getTimestamps(batches, prompt, API_KEY) {
+export async function getTimestamps(batches, prompt) {
     const openAIConfiguration = new Configuration({
-        apiKey: API_KEY,
+        apiKey: process.env.OPENAI_API_KEY,
     });
 
     const openai = new OpenAIApi(openAIConfiguration);
