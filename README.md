@@ -64,8 +64,6 @@ This call returns the following object. Here the duration represents the length 
 
 The following environment variables are required:
 
--   `REDIS_EXPIRATION_TIME`: The expiration time for the Redis cache (in seconds). A value of `0` means that the cached value will never expire.
-
 -   `YOUTUBE_API_KEY`: The API key for the YouTube API.
 
 -   `OPENAI_API_KEY`: The API key for the OpenAI GPT-3 API.
